@@ -2,6 +2,16 @@
 #   https://github.com/jodell/selenium-client/blob/da0f3dfbc05a6377c0cada09a3d650daf1261415/lib/xvfb/xvfb.rb
 module Kopflos
   class Xvfb
+    class NotInstalled < Exception
+      def message
+        msg = <<-MSG
+          Could not find Xvfb in PATH.
+          Try installing xvfb via `sudo apt-get install xvfb`.
+          PATH: #{ENV['PATH']}
+        MSG
+      end
+    end
+
     attr_accessor :font_path, :resolution, :display, :redirect, 
         :background, :nohup, :xvfb_cmd
 
@@ -29,7 +39,7 @@ module Kopflos
 
     def command
       [
-        `which Xvfb`.chomp,
+        executable,
         @display,
         "-fp #{@font_path}",
         "-screen #{@display}",
@@ -39,14 +49,13 @@ module Kopflos
 
     protected
 
-      def must_be_installed
-
-      end
-
-      def install_message
-        msg = <<-MSG
-          Try installing xvfb via `sudo apt-get install xvfb`
-        MSG
+      def executable
+        return @executable if defined?(@executable)
+        @executable = `which Xvfb`.chomp
+        if @executable.empty?
+          raise NotInstalled
+        end
+        @executable
       end
 
       def determine_font_path
