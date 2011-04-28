@@ -1,3 +1,5 @@
+require 'tempfile'
+
 # heavily inspired by selenium-client
 #   https://github.com/jodell/selenium-client/blob/da0f3dfbc05a6377c0cada09a3d650daf1261415/lib/xvfb/xvfb.rb
 module Kopflos
@@ -12,25 +14,38 @@ module Kopflos
       end
     end
 
-    attr_accessor :font_path, :resolution, :display, :redirect, 
+    attr_accessor :font_path, :resolution, :screen, :redirect, 
         :background, :nohup, :xvfb_cmd
 
     def initialize(options = {})
       @font_path  = options[:font_path]      || determine_font_path
       @resolution = options[:resolution]     || '1024x768x24'
-      @display    = options[:display]        || ':1'
+      @screen     = options[:screen]         || '1'
       @redirect   = options[:redirect]       || " &> /dev/null"
       @background = options[:background]     || true
       @background = options[:nohup]          || false
-      @screenshot = options[:screenshot_dir] || false
+      @wait       = options[:wait]           || 5
+    end
+
+    def self.start(options={})
+      xvfb = new(options)
+      xvfb.start
+      xvfb
     end
 
     def start
-
+      authorize
+      if @pid = fork
+        STDERR.puts "forked => #{@pid}"
+        sleep @wait
+      else
+        exec *command
+      end
     end
 
     def stop
-
+      Process.kill("USR1", @pid)
+      Process.wait
     end
 
     def screenshot
@@ -40,11 +55,11 @@ module Kopflos
     def command
       [
         executable,
-        @display,
-        "-fp #{@font_path}",
-        "-screen #{@display}",
+        ":#{servernum}",
+        "-fp", @font_path,
+        '-screen', @screen,
         @resolution,
-      ] * ' ' 
+      ]
     end
 
     protected
@@ -68,6 +83,37 @@ module Kopflos
           end
         end
         raise "#{RUBY_PLATOFRM} not supported by default, Export $XVFB_FONT_PATH with a path to your X11 fonts/misc directory"
+      end
+
+      def authfile
+        @authfile ||= Tempfile.new('kopflos_Xauthority')
+      end
+
+      def mcookie
+        @mcookie ||= `mcookie`.chomp
+      end
+
+      def authorize
+        ENV['MCOOKIE'] = mcookie
+        ENV['XAUTHORITY'] = authfile.path
+        ENV['DISPLAY'] = ":#{servernum}"
+        IO.popen('xauth source -', 'w') do |xauth|
+          xauth.puts %Q~add :#{servernum} . #{mcookie}~
+        end
+      end
+
+
+      # Find a free server number by looking at .X*-lock files in /tmp.
+      def find_free_servernum
+        servernum  = 99
+        while File.exists?("/tmp/.X#{servernum}-lock")
+          servernum += 1
+        end
+        servernum
+      end
+
+      def servernum
+        @servernum = find_free_servernum
       end
 
   end
