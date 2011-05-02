@@ -48,8 +48,8 @@ module Kopflos
       Process.wait
     end
 
-    def screenshot
-
+    def screenshot(filename='screenshot.png')
+      system 'import', '-window', 'root', filename
     end
 
     def command
