@@ -14,16 +14,12 @@ module Kopflos
       end
     end
 
-    attr_accessor :font_path, :resolution, :screen, :redirect, 
-        :background, :nohup, :xvfb_cmd
+    attr_accessor :font_path, :resolution, :screen
 
     def initialize(options = {})
       @font_path  = options[:font_path]      || determine_font_path
       @resolution = options[:resolution]     || '1024x768x24'
       @screen     = options[:screen]         || '1'
-      @redirect   = options[:redirect]       || " &> /dev/null"
-      @background = options[:background]     || true
-      @background = options[:nohup]          || false
       @wait       = options[:wait]           || 5
       @manager    = options[:manager] || options[:wm]
     end
