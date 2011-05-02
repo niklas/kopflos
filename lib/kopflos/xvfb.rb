@@ -25,6 +25,7 @@ module Kopflos
       @background = options[:background]     || true
       @background = options[:nohup]          || false
       @wait       = options[:wait]           || 5
+      @manager    = options[:manager] || options[:wm]
     end
 
     def self.start(options={})
@@ -39,6 +40,7 @@ module Kopflos
         STDERR.puts "forked => #{@pid}"
         sleep @wait
       else
+        start_window_manager
         exec *command
       end
     end
@@ -113,6 +115,13 @@ module Kopflos
 
       def servernum
         @servernum = find_free_servernum
+      end
+
+      def start_window_manager
+        return unless @manager
+        fork do
+          system(@manager)
+        end
       end
 
   end
