@@ -33,7 +33,7 @@ module Kopflos
     def start
       authorize
       if @server = fork
-        STDERR.puts "forked => #{@server}"
+        log "forked => #{@server}"
         sleep @wait
       else
         start_window_manager
@@ -117,6 +117,14 @@ module Kopflos
         return unless @manager
         fork do
           system(@manager)
+        end
+      end
+
+      def log(message)
+        if defined?(Rails)
+          Rails.logger.info(message)
+        else
+          STDERR.puts message
         end
       end
 
