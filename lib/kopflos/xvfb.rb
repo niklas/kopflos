@@ -41,6 +41,7 @@ module Kopflos
         sleep @wait
       else
         start_window_manager
+        log "starting... #{command.join(' ')}"
         exec *command
       end
     end
@@ -97,7 +98,7 @@ module Kopflos
 
       def authorize
         ENV['XAUTHORITY'] = authfile.path
-        ENV['DISPLAY'] = ":#{servernum}"
+        ENV['DISPLAY'] = ":#{servernum}.#{@screen}"
         IO.popen('xauth source -', 'w') do |xauth|
           xauth.puts %Q~add :#{servernum} . #{mcookie}~
         end
