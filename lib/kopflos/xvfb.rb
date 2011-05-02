@@ -36,8 +36,8 @@ module Kopflos
 
     def start
       authorize
-      if @pid = fork
-        STDERR.puts "forked => #{@pid}"
+      if @server = fork
+        STDERR.puts "forked => #{@server}"
         sleep @wait
       else
         start_window_manager
@@ -46,7 +46,7 @@ module Kopflos
     end
 
     def stop
-      Process.kill("USR1", @pid)
+      Process.kill("USR1", @server)
       Process.wait
     end
 
