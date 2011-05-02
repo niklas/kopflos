@@ -49,6 +49,8 @@ module Kopflos
     def stop
       Process.kill("USR1", @server)
       Process.wait
+      File.unlink( lockfile ) if @servernum
+    rescue Errno::ENOENT => e
     end
 
     def screenshot(filename='screenshot.png')
@@ -108,14 +110,14 @@ module Kopflos
       # Find a free server number by looking at .X*-lock files in /tmp.
       def find_free_servernum
         servernum  = 99
-        while File.exists?("/tmp/.X#{servernum}-lock")
+        while File.exists?( lockfile( servernum ) )
           servernum += 1
         end
         servernum
       end
 
       def servernum
-        @servernum = find_free_servernum
+        @servernum ||= find_free_servernum
       end
 
       def start_window_manager
@@ -131,6 +133,10 @@ module Kopflos
         else
           STDERR.puts message
         end
+      end
+
+      def lockfile(num=servernum)
+        "/tmp/.X#{num}-lock"
       end
 
   end
