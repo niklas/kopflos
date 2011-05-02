@@ -123,6 +123,7 @@ module Kopflos
       def start_window_manager
         return unless @manager
         fork do
+          sleep @wait # FIXME is there a generic way to find out if Xvfb has started?
           system(@manager)
         end
       end
