@@ -4,7 +4,9 @@ require 'tempfile'
 #   https://github.com/jodell/selenium-client/blob/da0f3dfbc05a6377c0cada09a3d650daf1261415/lib/xvfb/xvfb.rb
 module Kopflos
   class Xvfb
-    class NotInstalled < Exception
+    class Error < ::Exception; end
+
+    class NotInstalled < Error
       def message
         msg = <<-MSG
           Could not find Xvfb in PATH.
@@ -13,6 +15,8 @@ module Kopflos
         MSG
       end
     end
+
+    class NotSupported < Error; end
 
     attr_accessor :font_path, :resolution, :screen
 
@@ -80,7 +84,7 @@ module Kopflos
             return ENV['XVFB_FONT_PATH'] if ENV['XVFB_FONT_PATH']
           end
         end
-        raise "#{RUBY_PLATOFRM} not supported by default, Export $XVFB_FONT_PATH with a path to your X11 fonts/misc directory"
+        raise NotSupported, "#{RUBY_PLATFORM} not supported by default, Export $XVFB_FONT_PATH with a path to your X11 fonts/misc directory"
       end
 
       def authfile
