@@ -94,7 +94,6 @@ module Kopflos
       end
 
       def authorize
-        ENV['MCOOKIE'] = mcookie
         ENV['XAUTHORITY'] = authfile.path
         ENV['DISPLAY'] = ":#{servernum}"
         IO.popen('xauth source -', 'w') do |xauth|
