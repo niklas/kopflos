@@ -21,7 +21,7 @@ module Kopflos
     attr_accessor :font_path, :resolution, :screen
 
     def initialize(options = {})
-      @font_path  = options[:font_path]      || determine_font_path
+      @font_path  = options[:font_path]      || self.class.determine_font_path
       @resolution = options[:resolution]     || '1024x768x24'
       @screen     = options[:screen]         || '1'
       @wait       = options[:wait]           || 5
@@ -78,7 +78,7 @@ module Kopflos
         @executable
       end
 
-      def determine_font_path
+      def self.determine_font_path
         if RUBY_PLATFORM =~ /linux/
           case `cat /etc/issue`
           when /Debian|Ubuntu/
