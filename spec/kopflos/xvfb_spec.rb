@@ -15,6 +15,8 @@ module Kopflos
       before :each do
         Xvfb.stub!(:determine_font_path).and_return('/usr/share/fonts/X11/misc')
         @xvfb = Xvfb.new
+        @xvfb.stub!(:fork).and_return(23) # crazy, but seems to work
+        @xvfb.stub!(:kill_server).and_return(true)
       end
 
       after :each do

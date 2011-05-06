@@ -47,10 +47,11 @@ module Kopflos
     end
 
     def stop
-      Process.kill("USR1", @server)
+      kill_server
       Process.wait
       File.unlink( lockfile ) if @servernum
     rescue Errno::ENOENT => e
+    rescue Errno::ECHILD => e
     end
 
     def screenshot(filename='screenshot.png')
@@ -138,6 +139,14 @@ module Kopflos
 
       def lockfile(num=servernum)
         "/tmp/.X#{num}-lock"
+      end
+
+      def kill_server
+        if @server
+          Process.kill("USR1", @server)
+        else
+          log "no server found to kill"
+        end
       end
 
   end
