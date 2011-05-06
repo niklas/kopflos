@@ -27,6 +27,18 @@ module Kopflos
         @xvfb.should_receive(:authorize).and_return(true)
         @xvfb.start
       end
+
+      it "should set DISPLAY and XAUTHORITY env vars" do
+        display, xauthority = ENV['DISPLAY'], ENV['XAUTHORITY']
+        @xvfb.start
+
+        ENV['DISPLAY'].should_not be_nil
+        ENV['DISPLAY'].should_not be_empty
+        ENV['DISPLAY'].should_not == display
+        ENV['XAUTHORITY'].should_not be_nil
+        ENV['XAUTHORITY'].should_not be_empty
+        ENV['XAUTHORITY'].should_not == xauthority
+      end
     end
 
   end
