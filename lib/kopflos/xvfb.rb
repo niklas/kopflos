@@ -41,8 +41,7 @@ module Kopflos
         sleep @wait
       else
         start_window_manager
-        log "starting... #{command.join(' ')}"
-        exec *command
+        execute
       end
     end
 
@@ -139,6 +138,11 @@ module Kopflos
 
       def lockfile(num=servernum)
         "/tmp/.X#{num}-lock"
+      end
+
+      def execute
+        log "starting... #{command.join(' ')}"
+        exec *command
       end
 
       def kill_server

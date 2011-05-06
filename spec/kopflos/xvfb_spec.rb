@@ -8,7 +8,7 @@ module Kopflos
 
     it "should determine font path on initialization" do
       Xvfb.should_receive(:determine_font_path)
-      Xvfb.new
+      Xvfb.new :wait => 1
     end
 
     describe 'new' do
@@ -38,6 +38,18 @@ module Kopflos
         ENV['XAUTHORITY'].should_not be_nil
         ENV['XAUTHORITY'].should_not be_empty
         ENV['XAUTHORITY'].should_not == xauthority
+      end
+
+      describe "in forked process" do
+        before :each do
+          @xvfb.stub!(:authorize).and_return(true)
+          @xvfb.stub!(:fork).and_return(nil)
+          @xvfb.stub!(:execute).and_return(true) # not really, should NOT return, it calles Kernel#exec
+        end
+        it "should start window manager" do
+          @xvfb.should_receive(:start_window_manager).and_return(true)
+          @xvfb.start
+        end
       end
     end
 
