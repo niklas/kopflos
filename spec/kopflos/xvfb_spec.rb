@@ -16,6 +16,15 @@ module Kopflos
         Xvfb.stub!(:determine_font_path).and_return('/usr/share/fonts/X11/misc')
         @xvfb = Xvfb.new
       end
+
+      after :each do
+        @xvfb.stop
+      end
+
+      it "should authorize itself on startup" do
+        @xvfb.should_receive(:authorize).and_return(true)
+        @xvfb.start
+      end
     end
 
   end
