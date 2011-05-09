@@ -6,4 +6,10 @@ module Kopflos
     @server.start
     @server
   end
+
+  def self.stop
+    if @server
+      @server.stop
+    end
+  end
 end
