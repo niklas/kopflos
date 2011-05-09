@@ -18,7 +18,7 @@ module Kopflos
 
     class NotSupported < Error; end
 
-    attr_accessor :font_path, :resolution, :screen
+    attr_accessor :font_path, :resolution, :screen, :wait
 
     def initialize(options = {})
       @font_path  = options[:font_path]      || self.class.determine_font_path

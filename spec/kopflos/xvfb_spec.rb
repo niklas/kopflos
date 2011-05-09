@@ -11,6 +11,7 @@ module Kopflos
       Xvfb.new :wait => 1
     end
 
+
     describe 'new' do
       before :each do
         Xvfb.stub!(:determine_font_path).and_return('/usr/share/fonts/X11/misc')
@@ -21,6 +22,22 @@ module Kopflos
 
       after :each do
         @xvfb.stop
+      end
+
+      it "should set font path" do
+        @xvfb.font_path.should == '/usr/share/fonts/X11/misc'
+      end
+
+      it "should have default resolution" do
+        @xvfb.resolution.should == '1024x768x24'
+      end
+
+      it "should have default screen" do
+        @xvfb.screen.should == '1'
+      end
+
+      it "should have a default wait time of 5s" do
+        @xvfb.wait.should == 5
       end
 
       it "should authorize itself on startup" do
