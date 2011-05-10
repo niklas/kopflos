@@ -45,9 +45,16 @@ module Kopflos
         @xvfb.start
       end
 
+      it "should reflect its status" do
+        @xvfb.start
+        @xvfb.should be_running
+        @xvfb.stop
+        @xvfb.should_not be_running
+      end
+
       it "should set DISPLAY and XAUTHORITY env vars" do
         display, xauthority = ENV['DISPLAY'], ENV['XAUTHORITY']
-        @xvfb.start
+        @xvfb.authorize
 
         ENV['DISPLAY'].should_not be_nil
         ENV['DISPLAY'].should_not be_empty

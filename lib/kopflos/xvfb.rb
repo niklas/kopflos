@@ -45,12 +45,19 @@ module Kopflos
       end
     end
 
+    def running?
+      !!@server
+    end
+
     def stop
+      load_env
       kill_server
       Process.wait
       File.unlink( lockfile ) if @servernum
     rescue Errno::ENOENT => e
     rescue Errno::ECHILD => e
+    ensure
+      @server = nil
     end
 
     def screenshot(filename='screenshot.png')
@@ -66,6 +73,16 @@ module Kopflos
         @resolution,
       ]
     end
+
+    def authorize
+      save_env
+      ENV['XAUTHORITY'] = authfile.path
+      ENV['DISPLAY'] = ":#{servernum}.#{@screen}"
+      IO.popen('xauth source -', 'w') do |xauth|
+        xauth.puts %Q~add :#{servernum} . #{mcookie}~
+      end
+    end
+
 
     protected
 
@@ -96,14 +113,6 @@ module Kopflos
 
       def mcookie
         @mcookie ||= `mcookie`.chomp
-      end
-
-      def authorize
-        ENV['XAUTHORITY'] = authfile.path
-        ENV['DISPLAY'] = ":#{servernum}.#{@screen}"
-        IO.popen('xauth source -', 'w') do |xauth|
-          xauth.puts %Q~add :#{servernum} . #{mcookie}~
-        end
       end
 
 
@@ -151,6 +160,14 @@ module Kopflos
         else
           log "no server found to kill"
         end
+      end
+
+      def save_env
+        @display, @auth = ENV['DISPLAY'], ENV['XAUTHORITY']
+      end
+
+      def load_env
+         ENV['DISPLAY'], ENV['XAUTHORITY'] = @display, @auth
       end
 
   end
