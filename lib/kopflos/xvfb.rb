@@ -42,6 +42,7 @@ module Kopflos
       else
         start_window_manager
         execute
+        log "finished"
       end
     end
 
@@ -81,6 +82,10 @@ module Kopflos
       IO.popen('xauth source -', 'w') do |xauth|
         xauth.puts %Q~add :#{servernum} . #{mcookie}~
       end
+    end
+
+    def to_s
+      "<#{self.class} :#{servernum}.#{@screen}>"
     end
 
 
@@ -138,6 +143,7 @@ module Kopflos
       end
 
       def log(message)
+        message = "#{self} #{message}"
         if defined?(Rails)
           Rails.logger.info(message)
         else
