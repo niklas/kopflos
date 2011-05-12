@@ -69,6 +69,7 @@ module Kopflos
       [
         executable,
         ":#{servernum}",
+        '-br', # black background
         "-fp", @font_path,
         '-screen', @screen,
         @resolution,
