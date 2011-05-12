@@ -5,10 +5,10 @@ system so you can test while you have no actual display.
 
 == Installation
 
-# Add 'kopflos' to your gemfile. 
-# Install xvfb. 
-# run your cucumber / steak / etc stories as before
-# observe: no browser window popping up
+* Add 'kopflos' to your gemfile. 
+* Install xvfb. 
+* run your cucumber / steak / etc stories as before
+* observe: no browser window popping up
 
 Do not know how to support Mac yet. But which ruby developer uses a macintosh anyway?
 
