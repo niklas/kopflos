@@ -14,9 +14,10 @@ module Kopflos
 
     describe 'new' do
       before :each do
+        process = mock("process running in background", :pid => 0, :status => 'sleep')
         Xvfb.stub!(:determine_font_path).and_return('/usr/share/fonts/X11/misc')
         @xvfb = Xvfb.new
-        @xvfb.stub!(:fork).and_return(23) # crazy, but seems to work
+        Open4.stub!(:background).and_return( process )
         @xvfb.stub!(:kill_server).and_return(true)
       end
 
@@ -67,7 +68,6 @@ module Kopflos
       describe "in forked process" do
         before :each do
           @xvfb.stub!(:authorize).and_return(true)
-          @xvfb.stub!(:fork).and_return(nil)
           @xvfb.stub!(:execute).and_return(true) # not really, should NOT return, it calles Kernel#exec
         end
         it "should start window manager" do

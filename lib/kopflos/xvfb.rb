@@ -1,4 +1,5 @@
 require 'tempfile'
+require 'open4'
 
 # heavily inspired by selenium-client
 #   https://github.com/jodell/selenium-client/blob/da0f3dfbc05a6377c0cada09a3d650daf1261415/lib/xvfb/xvfb.rb
@@ -36,18 +37,15 @@ module Kopflos
 
     def start
       authorize
-      if @server = fork
-        log "forked => #{@server}"
-        sleep @wait
-      else
-        start_window_manager
-        execute
-        log "finished"
-      end
+      @server = start_server_in_subprocess
+      log "started => #{@server.pid}"
+      sleep @wait # FIXME is there a generic way to find out if Xvfb has started?
+      start_window_manager # fire and forget
+      log "finished"
     end
 
     def running?
-      !!@server
+      !!@server && !!@server.status
     end
 
     def stop
@@ -137,10 +135,7 @@ module Kopflos
 
       def start_window_manager
         return unless @manager
-        fork do
-          sleep @wait # FIXME is there a generic way to find out if Xvfb has started?
-          system(@manager)
-        end
+        Open4::background @manager
       end
 
       def log(message)
@@ -156,14 +151,15 @@ module Kopflos
         "/tmp/.X#{num}-lock"
       end
 
-      def execute
-        log "starting... #{command.join(' ')}"
-        exec *command
+      def start_server_in_subprocess
+        empty = ''
+        log "starting: #{command.join(' ')}"
+        Open4::background(command, 0 => empty, 1 => empty, 2 => empty, 'ignore_exit_failure' => true)
       end
 
       def kill_server
         if @server
-          Process.kill("USR1", @server)
+          Process.kill("USR1", @server.pid)
         else
           log "no server found to kill"
         end
