@@ -1,7 +1,7 @@
 = Kopflos
 
-Yo dog, I heard you like testing, so I put some virtual framebuffer onto your
-system so you can test while you have no actual display.
+Yo dog, I heard you like testing in real browsers, so I put some virtual
+framebuffer onto your system so you can test while you have no actual display.
 
 == Installation
 
