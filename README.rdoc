@@ -21,7 +21,7 @@ In your env.rb:
 == Future / TODO
 
 * Screenshot support -- already build in, may get more sophisticated later (TM).
-* disable kopflos temporary -- to look at your browser from time to time
+* disable kopflos temporarily -- to look at your browser from time to time
 
 == Contributing to kopflos
  
