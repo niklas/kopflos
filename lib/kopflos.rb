@@ -11,6 +11,8 @@ module Kopflos
       @server.start
       @server
     end
+  rescue Xvfb::NotSupported => e
+    STDERR.puts "your platform is not supported (yet): #{RUBY_PLATFORM}"
   end
 
   def self.stop

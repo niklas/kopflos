@@ -27,12 +27,17 @@ module Kopflos
       @screen     = options[:screen]         || '1'
       @wait       = options[:wait]           || 5
       @manager    = options[:manager] || options[:wm]
+      raise NotSupported unless self.class.supported?
     end
 
     def self.start(options={})
       xvfb = new(options)
       xvfb.start
       xvfb
+    end
+
+    def self.supported?
+      RUBY_PLATFORM =~ /linux/
     end
 
     def start
