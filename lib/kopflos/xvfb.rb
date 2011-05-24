@@ -141,6 +141,8 @@ module Kopflos
       def start_window_manager
         return unless @manager
         Open4::background @manager
+      rescue Errno::ECHILD => e
+        log "could not start window manager: #{e}"
       end
 
       def log(message)
@@ -160,6 +162,8 @@ module Kopflos
         empty = ''
         log "starting: #{command.join(' ')}"
         Open4::background(command, 0 => empty, 1 => empty, 2 => empty, 'ignore_exit_failure' => true)
+      rescue Errno::ECHILD => e
+        log "could not start server: #{e}"
       end
 
       def kill_server
