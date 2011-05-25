@@ -5,7 +5,9 @@ module Kopflos
 
   def self.start(opts={})
     if running?
-      raise AlreadyRunning, "there is already a server running: #{@server}"
+      unless opts[:reuse]
+        raise AlreadyRunning, "there is already a server running: #{@server}"
+      end
     else
       @server = Xvfb.new(opts)
       @server.start

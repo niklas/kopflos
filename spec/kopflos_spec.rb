@@ -34,7 +34,13 @@ describe "Kopflos" do
     it "should not allow to run another server simultanously" do
       lambda {
         Kopflos.start
-      }.should raise_error
+      }.should raise_error(Kopflos::AlreadyRunning)
+    end
+
+    it "should allow to reuse a server" do
+      lambda {
+        Kopflos.start :reuse => true
+      }.should_not raise_error(Kopflos::AlreadyRunning)
     end
 
   end
