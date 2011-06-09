@@ -45,7 +45,7 @@ module Kopflos
       @server = start_server_in_subprocess
       log "started => #{@server.pid}"
       sleep @wait # FIXME is there a generic way to find out if Xvfb has started?
-      start_window_manager # fire and forget
+      @window_manager = start_window_manager
       log "finished"
     end
 
@@ -56,6 +56,7 @@ module Kopflos
     def stop
       load_env
       kill_server
+      kill_window_manager
       Process.wait
       File.unlink( lockfile ) if @servernum
     rescue Errno::ENOENT => e
@@ -168,7 +169,21 @@ module Kopflos
 
       def kill_server
         if @server
+          # first, kill the X server
           Process.kill("USR1", @server.pid)
+          # then wait for the thread to finish
+          @server.join
+        else
+          log "no server found to kill"
+        end
+      end
+
+      def kill_window_manager
+        if @window_manager && @window_manager.respond_to?(:pid)
+          # first, kill the external process
+          Process.kill("USR1", @window_manager.pid)
+          # then wait for the thread to finish
+          @window_manager.join
         else
           log "no server found to kill"
         end
