@@ -16,6 +16,35 @@ describe "Kopflos" do
     }.should_not raise_error
   end
 
+  it "should not start if disabled by environment variable" do
+    Kopflos.stub(:disabled_by_env_variable?).and_return(true)
+    Kopflos::Xvfb.should_not_receive(:new)
+    Kopflos.start
+  end
+
+  context "environment variable" do
+    before do
+      @old_env = ENV['KOPFLOS']
+    end
+    after do
+      ENV['KOPFLOS'] = @old_env
+    end
+
+    %w(disabled disable 0 false no).each do |off_switch|
+      it "disables kopflos if set to '#{off_switch}'" do
+        ENV['KOPFLOS'] = off_switch
+        Kopflos.should be_disabled_by_env_variable
+      end
+    end
+
+    %w(enable enabled 1 true yes fnord).each do |off_switch|
+      it "does not disable kopflos if set to '#{off_switch}'" do
+        ENV['KOPFLOS'] = off_switch
+        Kopflos.should_not be_disabled_by_env_variable
+      end
+    end
+  end
+
   describe "started" do
     before :each do
       @server = mock("Kopflos::Server")

@@ -3,7 +3,13 @@ require 'kopflos/xvfb'
 module Kopflos
   class AlreadyRunning < Exception; end
 
+  EnvVar = 'KOPFLOS'
+
   def self.start(opts={})
+    if disabled_by_env_variable?
+      log "disabled through environment variable #{EnvVar} (set to anything else than 'false' or '0')"
+      return
+    end
     if running?
       unless opts[:reuse]
         raise AlreadyRunning, "there is already a server running: #{@server}"
@@ -14,7 +20,7 @@ module Kopflos
       @server
     end
   rescue Xvfb::NotSupported => e
-    STDERR.puts "your platform is not supported (yet): #{RUBY_PLATFORM}"
+    log "your platform is not supported (yet): #{RUBY_PLATFORM}"
   end
 
   def self.stop
@@ -31,5 +37,13 @@ module Kopflos
   def self.reset!
     stop
     @server = nil
+  end
+
+  def self.disabled_by_env_variable?
+    %w(false disabled 0 disable no).include?(ENV[EnvVar].to_s)
+  end
+
+  def self.log(message)
+    STDERR.puts "#{self}: #{message}"
   end
 end
