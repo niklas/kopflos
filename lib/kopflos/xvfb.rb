@@ -61,6 +61,7 @@ module Kopflos
       File.unlink( lockfile ) if @servernum
     rescue Errno::ENOENT => e
     rescue Errno::ECHILD => e
+    rescue Errno::EPIPE => e
     ensure
       @server = nil
     end
