@@ -54,7 +54,7 @@ module Kopflos
     end
 
     def stop
-      load_env
+      load_env @origin_env
       kill_server
       kill_window_manager
       Process.wait
@@ -82,7 +82,7 @@ module Kopflos
     end
 
     def authorize
-      save_env
+      @origin_env = current_env
       ENV['XAUTHORITY'] = authfile.path
       ENV['DISPLAY'] = ":#{servernum}.#{@screen}"
       IO.popen('xauth source -', 'w') do |xauth|
@@ -190,12 +190,14 @@ module Kopflos
         end
       end
 
-      def save_env
-        @display, @auth = ENV['DISPLAY'], ENV['XAUTHORITY']
+      def current_env
+        { :display => ENV['DISPLAY'], :xauthority => ENV['XAUTHORITY'] }
       end
 
-      def load_env
-         ENV['DISPLAY'], ENV['XAUTHORITY'] = @display, @auth
+      def load_env(env)
+        if env && env.respond_to?(:[])
+          ENV['DISPLAY'], ENV['XAUTHORITY'] = env[:display], env[:xauthority]
+        end
       end
 
   end
