@@ -10,6 +10,10 @@ module Kopflos
       log "disabled through environment variable #{EnvVar} (set to anything else than 'false' or '0')"
       return
     end
+    if disabled_by_switch_file?
+      log "disabled through switch file #{switch_file_path} (unlink to hide the frakkin browser windows again)"
+      return
+    end
     if running?
       unless opts[:reuse]
         raise AlreadyRunning, "there is already a server running: #{@server}"
@@ -41,6 +45,14 @@ module Kopflos
 
   def self.disabled_by_env_variable?
     %w(false disabled 0 disable no).include?(ENV[EnvVar].to_s)
+  end
+
+  def self.disabled_by_switch_file?
+    File.exists?( switch_file_path )
+  end
+
+  def self.switch_file_path
+    'kopflos_disabled'
   end
 
   def self.log(message)

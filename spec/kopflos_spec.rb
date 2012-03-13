@@ -45,6 +45,36 @@ describe "Kopflos" do
     end
   end
 
+  it "should not start if disabled by switch file" do
+    Kopflos.stub(:disabled_by_switch_file?).and_return(true)
+    Kopflos::Xvfb.should_not_receive(:new)
+    Kopflos.start
+  end
+
+  context "switch file in working dir" do
+    let(:switch_file) { Kopflos.switch_file_path }
+    after :each do
+      FileUtils.rm_f switch_file
+    end
+
+    it "is not checked in subdirs" do
+      Kopflos.switch_file_path.should_not include('/')
+    end
+
+    context "not existing" do
+      it "should not disable Kopflos" do
+        Kopflos.should_not be_disabled_by_switch_file
+      end
+    end
+
+    context "existing" do
+      it "should disable kopflos" do
+        FileUtils.touch switch_file
+        Kopflos.should be_disabled_by_switch_file
+      end
+    end
+  end
+
   describe "started" do
     before :each do
       @server = mock("Kopflos::Server")
