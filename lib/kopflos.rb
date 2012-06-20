@@ -56,6 +56,8 @@ module Kopflos
   end
 
   def self.log(message)
-    STDERR.puts "#{self}: #{message}"
+    if ENV['LOG']
+      STDERR.puts "#{self}: #{message}"
+    end
   end
 end
