@@ -54,15 +54,17 @@ module Kopflos
     end
 
     def stop
-      load_env @origin_env
-      kill_server
       kill_window_manager
+      kill_server
       Process.wait
-      File.unlink( lockfile ) if @servernum
     rescue Errno::ENOENT => e
     rescue Errno::ECHILD => e
     rescue Errno::EPIPE => e
     ensure
+      if @servernum
+        File.unlink( lockfile ) if File.exist?(lockfile)
+      end
+      load_env @origin_env
       @server = nil
     end
 
