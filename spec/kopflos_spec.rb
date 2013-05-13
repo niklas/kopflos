@@ -7,6 +7,7 @@ describe "Kopflos" do
     @xvfb.stub!(:running?).and_return(true)
     @xvfb.stub!(:stop).and_return(true)
     Kopflos::Xvfb.should_receive(:new).once.and_return(@xvfb)
+    Kopflos.stub(:disabled_by_env_variable?).and_return(false)
     Kopflos.start
   end
 
@@ -82,6 +83,7 @@ describe "Kopflos" do
       @server.stub!(:stop).and_return(true)
       @server.stub!(:running?).and_return(true)
       Kopflos::Xvfb.stub!(:new).and_return(@server)
+      Kopflos.stub(:disabled_by_env_variable?).and_return(false)
       Kopflos.start
     end
 
