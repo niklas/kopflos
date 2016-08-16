@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
   s.add_dependency 'open4'
   s.add_development_dependency "rspec", "~> 2.8.0"
   s.add_development_dependency "yard", "~> 0.6.0"
-  s.add_development_dependency "bundler", "~> 1.0.0"
-  s.add_development_dependency "jeweler", "~> 1.5.2"
-  s.add_development_dependency "rcov", ">= 0"
+  s.add_development_dependency "bundler"
+  s.add_development_dependency "jeweler", "~> 2.1.1"
 end
