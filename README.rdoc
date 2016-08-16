@@ -18,6 +18,12 @@ In your env.rb:
 
     require 'kopflos/cucumber'
 
+=== RSpec
+
+In your spec_helper.rb or rails_helper.rb
+
+    require 'kopflos/rspec'
+
 == Future / TODO
 
 * Screenshot support -- already build in, may get more sophisticated later (TM).
